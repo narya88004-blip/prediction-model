@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FirstPass v2 — RFT Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Consolas&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04050E;--surface:#090B18;--panel:#0E1122;--lift:#131628;
+  --bd:rgba(255,200,80,.08);--bda:rgba(255,200,80,.22);
+  --t:#F0EDE4;--t2:#8A8FA8;--t3:#3E4260;
+  --gold:#D4A84B;--gold2:#E8C06A;
+  --green:#2ECC8A;--red:#E05060;--warn:#E07A30;--blue:#4A90D8;
+  --serif:'Playfair Display',serif;
+  --body:'Cormorant Garamond',serif;
+  --mono:'Consolas',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--t);font-family:var(--body);font-size:15px;min-height:100vh;line-height:1.5}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--bd);padding:0 28px;height:50px;position:sticky;top:0;z-index:200}
+.brand{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-right:36px;white-space:nowrap}
+.brand sup{font-size:10px;font-family:var(--mono);color:var(--t3);letter-spacing:2px;vertical-align:super;margin-left:2px}
+.ntabs{display:flex}
+.ntab{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);padding:0 18px;height:50px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:.18s;white-space:nowrap}
+.ntab:hover{color:var(--t)}
+.ntab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+#n-dot{width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0}
+#n-txt{font-family:var(--mono);font-size:10px;color:var(--t3)}
+
+/* ── LAYOUT ── */
+.pg{display:none;padding:28px 32px;min-height:calc(100vh - 50px)}
+.pg.on{display:block}
+.ph{margin-bottom:24px}
+.ph h1{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--t);margin-bottom:2px}
+.ph p{font-family:var(--body);font-size:14px;color:var(--t2);font-style:italic}
+
+/* ── PANELS ── */
+.box{background:var(--panel);border:1px solid var(--bd);padding:22px;margin-bottom:18px}
+.boxt{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.boxt::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* ── FORM ── */
+.fg{margin-bottom:14px}
+.fl{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:5px}
+.fl .r{color:var(--gold);margin-left:2px}
+select,input[type=text],input[type=number]{
+  width:100%;background:var(--surface);border:1px solid var(--bd);color:var(--t);
+  padding:9px 12px;font-family:var(--body);font-size:14px;outline:none;
+  -webkit-appearance:none;appearance:none;transition:.18s;border-radius:0
+}
+select:focus,input:focus{border-color:var(--bda)}
+select:disabled{opacity:.35;cursor:not-allowed}
+select option{background:var(--surface)}
+.hint{font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:3px}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── CHIPS ── */
+.chip{display:inline-block;padding:2px 9px;font-family:var(--mono);font-size:9px;letter-spacing:.8px;border:1px solid;margin:2px 2px 2px 0;white-space:nowrap}
+.cg{border-color:var(--gold);color:var(--gold);background:rgba(212,168,75,.07)}
+.cgreen{border-color:var(--green);color:var(--green);background:rgba(46,204,138,.07)}
+.cred{border-color:var(--red);color:var(--red);background:rgba(224,80,96,.07)}
+.cblue{border-color:var(--blue);color:var(--blue);background:rgba(74,144,216,.07)}
+.cwarn{border-color:var(--warn);color:var(--warn);background:rgba(224,122,48,.07)}
+.cauto{border-color:var(--blue);color:var(--blue);background:rgba(74,144,216,.13);font-weight:700;letter-spacing:1px}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:11px 26px;cursor:pointer;border:none;transition:.18s;border-radius:0;display:inline-flex;align-items:center;gap:6px}
+.bp{background:var(--gold);color:#04050E}
+.bp:hover{background:var(--gold2)}
+.bp:disabled{background:var(--t3);color:var(--bg);cursor:not-allowed}
+.bo{background:transparent;border:1px solid var(--bda);color:var(--gold)}
+.bo:hover{background:rgba(212,168,75,.07)}
+
+/* ── KPI CARDS ── */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px}
+.kcard{background:var(--lift);border:1px solid var(--bd);padding:12px 14px}
+.klbl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:3px}
+.kval{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--t)}
+.ksub{font-family:var(--mono);font-size:9px;color:var(--t2);margin-top:1px}
+
+/* ── STATS BAR ── */
+.sbar{display:flex;border:1px solid var(--bd);margin-bottom:24px}
+.si{flex:1;padding:14px 18px;border-right:1px solid var(--bd);text-align:center}
+.si:last-child{border-right:none}
+.sv{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--gold)}
+.sl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-top:3px}
+
+/* ── GAUGE ── */
+#gwrap{display:flex;flex-direction:column;align-items:center;padding:18px 0 10px}
+#gscore{font-family:var(--serif);font-size:44px;font-weight:700;color:var(--gold);margin-top:-6px}
+#glbl{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);margin-top:2px}
+
+/* ── DRIVER CARDS ── */
+.dg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dc{background:var(--lift);border:1px solid var(--bd);padding:14px}
+.dn{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t2);margin-bottom:5px}
+.ds{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:5px}
+.dbar{height:3px;background:var(--bd);margin-bottom:5px}
+.dbf{height:3px;transition:width .6s ease}
+.dw{font-family:var(--mono);font-size:9px;color:var(--t3)}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd);background:var(--lift)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--bd);color:var(--t2);font-family:var(--body);font-size:13px}
+.tbl tr:hover td{background:var(--lift);color:var(--t)}
+
+/* ── VENDOR CARDS ── */
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.vc{background:var(--panel);border:1px solid var(--bd);overflow:hidden;transition:.18s}
+.vc:hover{border-color:var(--bda)}
+.vstripe{height:3px}
+.vbody{padding:14px}
+.vname{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--t);margin-bottom:6px;line-height:1.3}
+.vrft{font-family:var(--serif);font-size:26px;font-weight:700}
+.vrsub{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.vmeta{display:flex;gap:14px;font-family:var(--mono);font-size:9px;color:var(--t2);margin-bottom:8px;flex-wrap:wrap}
+.vtag{font-family:var(--mono);font-size:8px;padding:2px 6px;border:1px solid var(--bd);color:var(--t3);display:inline-block;margin:1px}
+
+/* ── RESULT ── */
+#result-wrap{display:none}
+.rverd{font-family:var(--serif);font-size:30px;font-weight:700;margin-bottom:6px}
+.rdesc{font-family:var(--body);font-size:14px;color:var(--t2);line-height:1.7;max-width:560px}
+.alt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.altc{background:var(--lift);border:1px solid var(--bd);padding:12px;position:relative}
+.altd{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:10px;font-weight:700}
+
+/* ── RETRAIN STEPS ── */
+.step{display:flex;gap:18px;margin-bottom:20px}
+.snum{width:34px;height:34px;background:var(--lift);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--gold);flex-shrink:0}
+.stxt h4{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--t);margin-bottom:2px}
+.stxt p{font-family:var(--body);font-size:13px;color:var(--t2);line-height:1.6}
+.cpill{font-family:var(--mono);font-size:10px;background:var(--lift);border:1px solid var(--bd);padding:4px 10px;color:var(--gold);display:inline-block;margin-top:5px}
+
+/* ── FADE ── */
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fa{animation:fi .3s ease both}
+.fa1{animation-delay:.08s}.fa2{animation-delay:.14s}.fa3{animation-delay:.2s}
+
+/* ── SCROLL ── */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--t3)}
+
+/* ── PRINT ── */
+@media print{nav,.pg:not(#pg-predict){display:none!important}#pg-predict{display:block!important;padding:0}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">FirstPass<sup>v2</sup></div>
+  <div class="ntabs">
+    <div class="ntab on" onclick="tab('predict')">Predict</div>
+    <div class="ntab" onclick="tab('analytics')">Analytics</div>
+    <div class="ntab" onclick="tab('vendors')">Vendors</div>
+    <div class="ntab" onclick="tab('model')">Model</div>
+    <div class="ntab" onclick="tab('retrain')">Retrain</div>
+  </div>
+  <div class="nav-right"><div id="n-dot"></div><span id="n-txt">Connecting…</span></div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     PREDICT
+══════════════════════════════════════════════ -->
+<div class="pg on" id="pg-predict">
+  <div class="ph"><h1>Sample RFT Prediction</h1><p>Cascade through the form — each step is filtered from your historical dataset</p></div>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start">
+
+    <!-- LEFT FORM -->
+    <div>
+      <!-- Step 1 -->
+      <div class="box">
+        <div class="boxt">01 — Garment &amp; Style</div>
+        <div class="g3">
+          <div class="fg"><label class="fl">Garment Type<span class="r">*</span></label>
+            <select id="f-g" onchange="onG()"><option value="">Select garment…</option></select></div>
+          <div class="fg"><label class="fl">Fit Type<span class="r">*</span></label>
+            <select id="f-fit" disabled onchange="chk()"><option value="">Garment first</option></select></div>
+          <div class="fg"><label class="fl">Block Pattern<span class="r">*</span></label>
+            <select id="f-bp" disabled onchange="onBP()"><option value="">Garment first</option></select></div>
+        </div>
+        <div class="g3">
+          <div class="fg"><label class="fl">Stretch Category<span class="r">*</span></label>
+            <select id="f-str" disabled onchange="onStr()"><option value="">Garment first</option></select></div>
+          <div class="fg"><label class="fl">Ease Allowance<span class="r">*</span></label>
+            <select id="f-ease" disabled onchange="chk()"><option value="">Garment first</option></select></div>
+          <div class="fg"><label class="fl">Fabric Type<span class="r">*</span></label>
+            <div><select id="f-fab" disabled onchange="onFab()"><option value="">Stretch first</option></select>
+            <span id="auto-chip" class="chip cauto" style="display:none">AUTO-DETECTED</span></div></div>
+        </div>
+        <!-- Block pattern stats -->
+        <div id="bp-stats" style="display:none;border-top:1px solid var(--bd);margin-top:10px;padding-top:12px">
+          <div class="g3">
+            <div><div class="fl">Pattern Complexity</div><div id="bp-cx" style="font-family:var(--mono);font-size:15px;color:var(--gold)">—</div></div>
+            <div><div class="fl">DXF Pieces</div><div id="bp-pc" style="font-family:var(--mono);font-size:15px;color:var(--gold)">—</div></div>
+            <div><div class="fl">Seam Length mm</div><div id="bp-sl" style="font-family:var(--mono);font-size:15px;color:var(--gold)">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="box" id="step2" style="opacity:.35;pointer-events:none">
+        <div class="boxt">02 — Vendor &amp; Process</div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Vendor<span class="r">*</span></label>
+            <select id="f-v" disabled onchange="onV()"><option value="">Confirm fabric first</option></select>
+            <div class="hint" id="v-hint">Filtered by garment &amp; fabric capability (≥3 samples)</div></div>
+          <div class="fg"><label class="fl">Sealer<span class="r">*</span></label>
+            <select id="f-sl" disabled onchange="chk()"><option value="">Select…</option></select></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label class="fl">Technologist</label>
+            <select id="f-tech"><option value="">Select…</option></select></div>
+          <div class="fg"><label class="fl">Sample Round<span class="r">*</span></label>
+            <select id="f-rnd" onchange="chk()">
+              <option value="">Select…</option>
+              <option value="1">Round 1 — First submission</option>
+              <option value="2">Round 2 — First re-submission</option>
+              <option value="3">Round 3 — Second re-submission</option>
+              <option value="4">Round 4 — Third re-submission</option>
+            </select></div>
+        </div>
+      </div>
+
+      <!-- Step 3 – Vendor context -->
+      <div class="box" id="vctx" style="display:none">
+        <div class="boxt">03 — Vendor Context <span style="font-family:var(--body);font-style:italic;text-transform:none;letter-spacing:0;color:var(--t3);font-size:12px;margin-left:6px">Historical averages · read only</span></div>
+        <div class="kgrid" id="vkpi"></div>
+      </div>
+
+      <!-- Predict controls -->
+      <div style="display:flex;gap:10px;align-items:center;margin-top:4px">
+        <button class="btn bp" id="btn-p" disabled onclick="predict()">Run Prediction</button>
+        <button class="btn bo" onclick="reset()">Reset</button>
+        <span id="p-hint" style="font-family:var(--mono);font-size:9px;color:var(--t3)">Complete all required fields</span>
+      </div>
+    </div><!-- /LEFT -->
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+      <div class="box" style="text-align:center">
+        <div class="boxt" style="justify-content:center">RFT Score</div>
+        <div id="gwrap">
+          <svg id="g-svg" width="170" height="96" viewBox="0 0 170 96">
+            <path d="M16,88 A70,70 0 0,1 154,88" fill="none" stroke="rgba(255,200,80,.08)" stroke-width="9" stroke-linecap="butt"/>
+            <path id="g-arc" d="M16,88 A70,70 0 0,1 154,88" fill="none" stroke="var(--gold)" stroke-width="9" stroke-linecap="butt"
+                  stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .7s ease,stroke .3s"/>
+            <line id="g-avg" x1="85" y1="18" x2="85" y2="32" stroke="rgba(255,200,80,.35)" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text id="g-avg-txt" x="85" y="46" fill="rgba(255,200,80,.35)" font-size="7" text-anchor="middle" font-family="Consolas">fleet avg</text>
+          </svg>
+          <div id="gscore">—</div>
+          <div id="glbl">Awaiting input</div>
+        </div>
+        <div id="live-note" style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:6px;display:none">Live estimate · ML result after predict</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div id="result-wrap">
+    <hr style="border:none;border-top:1px solid var(--bd);margin:24px 0">
+
+    <!-- Verdict panel -->
+    <div class="box fa" id="r-verdict-box">
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <div class="rverd" id="r-verdict"></div>
+          <div class="rdesc" id="r-desc"></div>
+          <div id="r-tags" style="margin-top:12px"></div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:10px">±5% based on 5-fold CV variance</div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-bottom:4px;letter-spacing:1px">ML CONFIDENCE</div>
+          <div id="r-conf" style="font-family:var(--serif);font-size:34px;font-weight:700"></div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t2);margin-top:3px">XGBoost probability</div>
+          <button class="btn bo" style="margin-top:14px;font-size:9px;padding:8px 14px" onclick="window.print()">↓ Print / Export</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prediction drivers -->
+    <div class="box fa fa1">
+      <div class="boxt">Prediction Drivers</div>
+      <div class="dg" id="r-drivers"></div>
+    </div>
+
+    <!-- Rejection reference -->
+    <div class="box fa fa2" id="r-rej-box">
+      <div class="boxt">Historical Rejection Reference</div>
+      <div id="r-rej"></div>
+    </div>
+
+    <!-- Vendor KPI repeat -->
+    <div class="box fa fa2" id="r-kpi-box">
+      <div class="boxt">Vendor Context</div>
+      <div class="kgrid" id="r-kpi"></div>
+    </div>
+
+    <!-- Alternatives -->
+    <div class="box fa fa3">
+      <div class="boxt">Smart Vendor Alternatives</div>
+      <div id="r-alts"></div>
+    </div>
+
+    <!-- Prediction history -->
+    <div id="hist-wrap" style="display:none;margin-top:18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)">Recent Predictions</div>
+        <span id="hist-tog" onclick="togHist()" style="cursor:pointer;color:var(--blue);font-family:var(--mono);font-size:9px">[ collapse ]</span>
+      </div>
+      <div id="hist-body">
+        <table class="tbl">
+          <thead><tr><th>Time</th><th>Vendor</th><th>Garment</th><th>Fabric</th><th>Score</th><th>Result</th><th></th></tr></thead>
+          <tbody id="hist-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div><!-- /predict -->
+
+<!-- ══════════════════════════════════════════════
+     ANALYTICS
+══════════════════════════════════════════════ -->
+<div class="pg" id="pg-analytics">
+  <div class="ph"><h1>Quality Analytics</h1><p>Fleet-wide rejection patterns and seasonal performance</p></div>
+  <div class="sbar" id="a-sbar"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+    <div class="box"><div class="boxt">Vendor Rejection Rate — All Vendors</div><canvas id="ch-vendor"></canvas></div>
+    <div class="box"><div class="boxt">Garment Type Pass Rate</div><canvas id="ch-garment"></canvas></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+    <div class="box"><div class="boxt">Sample Round Performance</div><canvas id="ch-round" height="200"></canvas></div>
+    <div class="box"><div class="boxt">Approval / Rejection Split</div><canvas id="ch-donut" height="200"></canvas></div>
+  </div>
+  <div class="box">
+    <div class="boxt">Vendor Rejection Detail</div>
+    <table class="tbl"><thead><tr><th>#</th><th>Vendor</th><th>Rejection %</th><th>Samples</th><th>Risk Tier</th><th style="width:160px">Bar</th></tr></thead>
+    <tbody id="a-vt"></tbody></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VENDORS
+══════════════════════════════════════════════ -->
+<div class="pg" id="pg-vendors">
+  <div class="ph"><h1>Vendor Intelligence</h1><p>Capability profiles and quality performance for all vendors</p></div>
+  <div class="sbar" id="vp-sbar"></div>
+  <div style="display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap">
+    <input type="text" id="v-search" placeholder="Search vendors…" style="max-width:260px" oninput="filtV()">
+    <select id="v-sort" style="max-width:200px" onchange="filtV()">
+      <option value="rft-d">Sort: RFT High → Low</option>
+      <option value="rft-a">Sort: RFT Low → High</option>
+      <option value="name">Sort: Name A–Z</option>
+      <option value="samples">Sort: Most Samples</option>
+    </select>
+  </div>
+  <div class="vgrid" id="v-grid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODEL
+══════════════════════════════════════════════ -->
+<div class="pg" id="pg-model">
+  <div class="ph"><h1>Model Intelligence</h1><p>XGBoost evaluation metrics, feature importance and performance analysis</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+    <div class="box">
+      <div class="boxt">ROC Curve</div>
+      <canvas id="roc-c" width="380" height="280"></canvas>
+      <div id="roc-lbl" style="text-align:center;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--gold)"></div>
+    </div>
+    <div class="box">
+      <div class="boxt">Confusion Matrix</div>
+      <div id="cm-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px"></div>
+      <div style="text-align:center;font-family:var(--body);font-size:11px;color:var(--t3);font-style:italic;margin-top:2px">Rows=Actual · Cols=Predicted · Youden threshold</div>
+    </div>
+  </div>
+  <div class="box"><div class="boxt">Feature Importance — Top 12</div><canvas id="fi-c"></canvas></div>
+  <div class="box">
+    <div class="boxt">Model Information</div>
+    <table class="tbl"><thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+    <tbody id="mi-rows"></tbody></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     RETRAIN
+══════════════════════════════════════════════ -->
+<div class="pg" id="pg-retrain">
+  <div class="ph"><h1>Retrain the Model</h1><p>Add new sample data to data.xlsx and retrain XGBoost in one click</p></div>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+    <div>
+      <div class="box">
+        <div class="boxt">Retraining Workflow</div>
+        <div class="step"><div class="snum">01</div><div class="stxt"><h4>Open the Data File</h4><p>Open <strong>data.xlsx</strong> in Excel or Google Sheets.</p><div class="cpill">data.xlsx → ML_Training_Data</div></div></div>
+        <div class="step"><div class="snum">02</div><div class="stxt"><h4>Add New Rows</h4><p>Append rows below existing data. Each row needs a <strong>Status</strong> of <em>Approved</em> or <em>Rejected</em>.</p><div class="cpill" style="font-size:9px;line-height:1.9">Vendors · Garment · Fit type · Fabric Type · Fabric Stretch Category<br>Ease Allowance Category · Block Pattern Name · Sealer · Technologist<br>Sample Round · TAT Days · RFT% (Computed Rolling) · Status</div></div></div>
+        <div class="step"><div class="snum">03</div><div class="stxt"><h4>Save and Close the File</h4><p>Excel locks files while open — close it before retraining to allow Python to read it.</p></div></div>
+        <div class="step"><div class="snum">04</div><div class="stxt"><h4>Click "Retrain Model Now"</h4><p>Reloads all data, re-engineers features, retrains XGBoost with 5-fold CV, saves new model.pkl.</p></div></div>
+        <div class="step"><div class="snum">05</div><div class="stxt"><h4>Review Updated Metrics</h4><p>New AUC-ROC, F1, and recall scores appear in the sidebar immediately after retraining.</p></div></div>
+      </div>
+      <div class="box">
+        <div class="boxt">What Changes After Retraining</div>
+        <div class="g2">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--green);margin-bottom:8px;letter-spacing:1px">✓ UPDATED</div>
+            <ul style="font-family:var(--body);font-size:13px;color:var(--t2);line-height:2.1;list-style:none">
+              <li>XGBoost model weights</li><li>OOF metrics (AUC, F1, Recall)</li>
+              <li>Feature importance rankings</li><li>Optimal decision threshold</li>
+              <li>Confusion matrix</li><li>Vendor analytics &amp; KPI stats</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-bottom:8px;letter-spacing:1px">⊘ NOT CHANGED</div>
+            <ul style="font-family:var(--body);font-size:13px;color:var(--t2);line-height:2.1;list-style:none">
+              <li>Style difficulty lookup tables</li><li>Cascade filter logic</li>
+              <li>Rejection reference data</li><li>UI layout and design</li>
+              <li>Server configuration</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="box">
+        <div class="boxt">Retrain Model</div>
+        <button class="btn bp" id="btn-rt" onclick="retrain()" style="width:100%;justify-content:center">↺ &nbsp;Retrain Model Now</button>
+        <div id="rt-status" style="margin-top:12px;font-family:var(--mono);font-size:10px;display:none"></div>
+        <hr style="border:none;border-top:1px solid var(--bd);margin:18px 0">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Current Model Metrics</div>
+        <div id="rt-metrics"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  GLOBALS
+// ══════════════════════════════════════════════
+const API = 'http://localhost:8765';
+let D = {};
+let hist = [];
+
+// ══════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════
+function tab(t){
+  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(e=>e.classList.remove('on'));
+  document.getElementById('pg-'+t).classList.add('on');
+  const tabs = ['predict','analytics','vendors','model','retrain'];
+  document.querySelectorAll('.ntab')[tabs.indexOf(t)]?.classList.add('on');
+  if(t==='analytics') drawAnalytics();
+  if(t==='vendors')   drawVendors();
+  if(t==='model')     drawModel();
+}
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+async function boot(){
+  try{
+    const r = await fetch(API+'/api/dashboard');
+    D = await r.json();
+    _('n-dot').style.background='var(--green)';
+    _('n-txt').textContent=`${D.total_records||0} records · Live`;
+    populateSealerTech();
+    populateGarments();
+    buildRetrainMetrics();
+  } catch(e){
+    _('n-dot').style.background='var(--red)';
+    _('n-txt').textContent='Server offline';
+  }
+}
+
+function _(id){ return document.getElementById(id); }
+function gv(id){ return _(id)?.value||''; }
+
+function populateGarments(){
+  const el = _('f-g');
+  el.innerHTML = '<option value="">Select garment…</option>';
+  Object.keys(D.GARMENT_RFT||{}).sort().forEach(g=>
+    el.innerHTML += `<option value="${g}">${g}</option>`);
+}
+
+function populateSealerTech(){
+  const sl = _('f-sl');
+  sl.innerHTML = '<option value="">Select…</option>';
+  Object.keys(D.SEAL||{}).sort().forEach(s=>
+    sl.innerHTML += `<option value="${s}">${s} — ${D.SEAL[s]}% RFT</option>`);
+  const tl = _('f-tech');
+  tl.innerHTML = '<option value="">Select…</option>';
+  (D.tech_list||[]).forEach(t=>tl.innerHTML += `<option value="${t}">${t}</option>`);
+}
+
+// ══════════════════════════════════════════════
+//  CASCADE — GARMENT SELECTED
+// ══════════════════════════════════════════════
+function onG(){
+  const g = gv('f-g');
+  // reset everything below
+  clearFrom('fit');
+  if(!g) return;
+
+  // Fit type
+  pop('f-fit', (D.FITS||{})[g]||[], 'Select fit…'); _('f-fit').disabled=false;
+  // Stretch
+  pop('f-str', (D.STRETS||{})[g]||[], 'Select stretch…'); _('f-str').disabled=false;
+  // Ease
+  pop('f-ease', (D.EASES||{})[g]||[], 'Select ease…'); _('f-ease').disabled=false;
+  // Block pattern
+  pop('f-bp', (D.BLOCKS||{})[g]||[], 'Select block pattern…'); _('f-bp').disabled=false;
+  chk();
+}
+
+function pop(id, arr, placeholder){
+  const el = _(id);
+  el.innerHTML = `<option value="">${placeholder}</option>`;
+  arr.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+}
+
+function clearFrom(level){
+  const ids = ['f-fit','f-str','f-ease','f-bp','f-fab','f-v'];
+  ids.forEach(id=>{
+    const el = _(id); if(!el) return;
+    el.innerHTML='<option value="">—</option>'; el.disabled=true;
+  });
+  _('auto-chip').style.display='none';
+  _('bp-stats').style.display='none';
+  _('step2').style.opacity='.35'; _('step2').style.pointerEvents='none';
+  _('vctx').style.display='none';
+  gaugeSet(0,false);
+}
+
+// ══════════════════════════════════════════════
+//  CASCADE — BLOCK PATTERN
+// ══════════════════════════════════════════════
+function onBP(){
+  const b = gv('f-bp');
+  const bp = (D.BP||{})[b];
+  if(bp){
+    _('bp-cx').textContent = bp.complexity ?? '—';
+    _('bp-pc').textContent = bp.pieces ?? '—';
+    _('bp-sl').textContent = bp.seam_length ? bp.seam_length.toLocaleString() : '—';
+    _('bp-stats').style.display='block';
+  } else {
+    _('bp-stats').style.display='none';
+  }
+  chk(); liveScore();
+}
+
+// ══════════════════════════════════════════════
+//  CASCADE — STRETCH → AUTO-DETECT FABRIC
+// ══════════════════════════════════════════════
+function onStr(){
+  const g=gv('f-g'), s=gv('f-str');
+  const key=`${g}|${s}`;
+  const fabs=(D.GSF||{})[key]||[];
+  const fd=_('f-fab'), chip=_('auto-chip');
+  fd.innerHTML='';
+  if(fabs.length===1){
+    fd.innerHTML=`<option value="${fabs[0]}">${fabs[0]}</option>`;
+    fd.disabled=true; chip.style.display='inline-block';
+    onFab(); // auto-unlock step 2
+  } else if(fabs.length>1){
+    fd.innerHTML='<option value="">Select fabric…</option>';
+    fabs.forEach(f=>fd.innerHTML+=`<option value="${f}">${f}</option>`);
+    fd.disabled=false; chip.style.display='none';
+  } else {
+    fd.innerHTML='<option value="">No data for this combo</option>';
+    fd.disabled=true; chip.style.display='none';
+  }
+  chk();
+}
+
+// ══════════════════════════════════════════════
+//  CASCADE — FABRIC → FILTER VENDORS
+// ══════════════════════════════════════════════
+function onFab(){
+  const fabric=gv('f-fab'), garment=gv('f-g');
+  if(!fabric){ _('step2').style.opacity='.35'; _('step2').style.pointerEvents='none'; return; }
+  // Unlock step 2
+  _('step2').style.opacity='1'; _('step2').style.pointerEvents='auto';
+  // Filter vendors: must have ≥3 samples for BOTH garment AND fabric
+  const vd=_('f-v');
+  vd.innerHTML='<option value="">Select vendor…</option>';
+  const eligible=(D.vendor_list||[]).filter(v=>{
+    const gc=(D.VG_CAP||{})[v]||[];
+    const fc=(D.VF_CAP||{})[v]||[];
+    return gc.includes(garment) && fc.includes(fabric);
+  });
+  // Sort by garment-specific RFT descending
+  eligible.sort((a,b)=>{
+    const ra=((D.VG||{})[a]||{})[garment]||0;
+    const rb=((D.VG||{})[b]||{})[garment]||0;
+    return rb-ra;
+  });
+  eligible.forEach(v=>{
+    const gr=((D.VG||{})[v]||{})[garment];
+    vd.innerHTML+=`<option value="${v}">${v}${gr?' — '+gr+'% RFT':''}</option>`;
+  });
+  vd.disabled=false; _('f-sl').disabled=false;
+  _('v-hint').textContent=`${eligible.length} vendor(s) qualified for ${garment} × ${fabric}`;
+  chk(); liveScore();
+}
+
+// ══════════════════════════════════════════════
+//  VENDOR SELECTED → SHOW KPIs
+// ══════════════════════════════════════════════
+function onV(){
+  const v=gv('f-v');
+  const vctx=_('vctx');
+  if(!v){ vctx.style.display='none'; return; }
+  vctx.style.display='block';
+  const vs=(D.VS||{})[v]||{};
+  const garment=gv('f-g');
+  const vg=((D.VG||{})[v]||{})[garment]??vs.rft??'—';
+  const kpis=[
+    {l:'Overall RFT',v:`${vs.rft??'—'}%`,s:'All garments'},
+    {l:'Garment RFT',v:`${vg}%`,s:garment},
+    {l:'Rolling RFT',v:`${vs.rolling??'—'}%`,s:'Computed rolling'},
+    {l:'DHU%',v:vs.dhu??'—',s:'Defects/100 units'},
+    {l:'AQL Score',v:vs.aql??'—',s:'Acceptance quality'},
+    {l:'On-time Del.',v:vs.otd??'—',s:'Score /10'},
+  ];
+  _('vkpi').innerHTML=kpis.map(k=>`
+    <div class="kcard"><div class="klbl">${k.l}</div><div class="kval">${k.v}</div><div class="ksub">${k.s}</div></div>`).join('');
+  chk(); liveScore();
+}
+
+// ══════════════════════════════════════════════
+//  FORM VALIDATION
+// ══════════════════════════════════════════════
+function chk(){
+  const req=['f-g','f-fit','f-str','f-ease','f-bp','f-fab','f-v','f-sl','f-rnd'];
+  const ok=req.every(id=>gv(id));
+  _('btn-p').disabled=!ok;
+  _('p-hint').textContent=ok?'Ready — click to predict':'Complete all required fields';
+  if(ok) liveScore();
+}
+
+function reset(){
+  document.querySelectorAll('select').forEach(el=>{ el.value=''; if(el.id!=='f-g'&&el.id!=='f-tech') el.disabled=true; });
+  clearFrom('fit');
+  _('result-wrap').style.display='none';
+  _('hist-wrap').style.display='none';
+  _('btn-p').disabled=true;
+  _('p-hint').textContent='Complete all required fields';
+  gaugeSet(0,false);
+}
+
+// ══════════════════════════════════════════════
+//  LIVE GAUGE (front-end composite score)
+// ══════════════════════════════════════════════
+function liveScore(){
+  const v=gv('f-v'),g=gv('f-g'),f=gv('f-fit'),fa=gv('f-fab'),b=gv('f-bp'),s=gv('f-sl');
+  if(!v||!g||!f||!fa) return;
+  const sc=calcRFT(v,g,f,fa,b,s);
+  gaugeSet(sc,true);
+  _('live-note').style.display='block';
+}
+
+function calcRFT(vendor,garment,fit,fabric,block,sealer){
+  const vgRFT  = ((D.VG||{})[vendor]||{})[garment] ?? (D.VS||{})[vendor]?.rft ?? 72;
+  const rolling= (D.VS||{})[vendor]?.rolling ?? 70;
+  const gfRFT  = (D.GF||{})[`${garment}|${fit}`] ?? (D.GARMENT_RFT||{})[garment] ?? 72;
+  const fabRFT = (D.FAB||{})[fabric] ?? 72;
+  const bpRFT  = (D.BP||{})[block]?.rft ?? 72;
+  const sealRFT= (D.SEAL||{})[sealer] ?? 72;
+  return Math.round(Math.max(2,Math.min(98, vgRFT*.40+rolling*.20+gfRFT*.15+fabRFT*.12+bpRFT*.08+sealRFT*.05)));
+}
+
+function gaugeSet(score,active){
+  const arc=_('g-arc'), se=_('gscore'), le=_('glbl');
+  if(!active||!score){ arc.style.strokeDashoffset=220; se.textContent='—'; se.style.color='var(--gold)'; le.textContent='Awaiting input'; return; }
+  arc.style.strokeDashoffset=220*(1-score/100);
+  const col=score>=75?'var(--green)':score>=60?'var(--gold)':'var(--red)';
+  arc.style.stroke=col; se.textContent=score+'%'; se.style.color=col;
+  le.textContent=score>=75?'Likely Pass':score>=60?'Moderate Risk':'High Risk';
+  // Avg line at 72%
+  const ang=Math.PI*(1-0.72), r=70, cx=85, cy=88;
+  const ax=cx+r*Math.cos(Math.PI-0.72*Math.PI), ay=cy-r*Math.sin(0.72*Math.PI);
+  const bx=cx+(r-16)*Math.cos(Math.PI-0.72*Math.PI), by=cy-(r-16)*Math.sin(0.72*Math.PI);
+  const ln=_('g-avg'); ln.x1.baseVal.value=ax; ln.y1.baseVal.value=ay; ln.x2.baseVal.value=bx; ln.y2.baseVal.value=by;
+}
+
+// ══════════════════════════════════════════════
+//  PREDICT
+// ══════════════════════════════════════════════
+async function predict(){
+  const g=gv('f-g'),f=gv('f-fit'),str=gv('f-str'),ease=gv('f-ease'),
+        bp=gv('f-bp'),fa=gv('f-fab'),v=gv('f-v'),sl=gv('f-sl'),
+        tech=gv('f-tech'),rnd=gv('f-rnd');
+  const vs=(D.VS||{})[v]||{};
+  const bpd=(D.BP||{})[bp]||{};
+  const payload={
+    'Garment':g,'Fit type':f,'Fabric Type':fa,'Fabric Stretch Category':str,
+    'Ease Allowance Category':ease,'Block Pattern Name':bp,'Sealer':sl,
+    'Sample Round':parseInt(rnd)||1,
+    'TAT Days': vs.rolling ? Math.max(1,Math.round((vs.rolling-60)/6)) : 3,
+    'RFT% (Computed Rolling)': vs.rolling||72,
+    'No. of Pattern Pieces (DXF)': bpd.pieces||26,
+    'Total Seam Length (mm)': bpd.seam_length||5000,
+    'Pattern Complexity Score': bpd.complexity||3.0,
+    'Avg Vertices/Piece': 32
+  };
+  _('btn-p').textContent='Computing…'; _('btn-p').disabled=true;
+  try{
+    const res=await fetch(API+'/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+    showResult(data,{g,f,str,ease,bp,fa,v,sl,tech,rnd});
+  } catch(e){ alert('Prediction error: '+e.message); }
+  finally{ _('btn-p').textContent='Run Prediction'; _('btn-p').disabled=false; }
+}
+
+function showResult(res,ctx){
+  const score=calcRFT(ctx.v,ctx.g,ctx.f,ctx.fa,ctx.bp,ctx.sl);
+  gaugeSet(score,true);
+  const ok=res.prediction==='Approved';
+  const col=ok?'var(--green)':'var(--red)';
+  // Verdict
+  _('r-verdict').textContent=ok?'✓ Likely Approved':'✗ High Rejection Risk';
+  _('r-verdict').style.color=col;
+  _('r-desc').textContent=ok
+    ?'This configuration has a strong approval profile. Proceed with sampling.'
+    :'This configuration carries significant rejection risk. Consider adjusting fabric choice, fit type, or vendor before submitting.';
+  _('r-conf').textContent=Math.round(res.confidence*100)+'%';
+  _('r-conf').style.color=col;
+  _('r-tags').innerHTML=[ctx.g,ctx.fa,ctx.f,ctx.v,`Round ${ctx.rnd}`,ctx.sl].map(t=>`<span class="chip cg">${t}</span>`).join('');
+
+  // Drivers
+  const vs=(D.VS||{})[ctx.v]||{};
+  const vgRFT=((D.VG||{})[ctx.v]||{})[ctx.g]??vs.rft??72;
+  const rolling=vs.rolling??70;
+  const gfRFT=(D.GF||{})[`${ctx.g}|${ctx.f}`]??(D.GARMENT_RFT||{})[ctx.g]??72;
+  const fabRFT=(D.FAB||{})[ctx.fa]??72;
+  const bpRFT=(D.BP||{})[ctx.bp]?.rft??72;
+  const slRFT=(D.SEAL||{})[ctx.sl]??72;
+  const drv=[
+    {n:'Vendor × Garment',s:vgRFT,w:40},
+    {n:'Vendor Rolling',s:rolling,w:20},
+    {n:'Garment + Fit',s:gfRFT,w:15},
+    {n:'Fabric Difficulty',s:fabRFT,w:12},
+    {n:'Block Pattern',s:bpRFT,w:8},
+    {n:'Sealer Grade',s:slRFT,w:5},
+  ];
+  _('r-drivers').innerHTML=drv.map(d=>{
+    const c=d.s>=75?'var(--green)':d.s>=60?'var(--gold)':'var(--red)';
+    return`<div class="dc"><div class="dn">${d.n}</div><div class="ds" style="color:${c}">${d.s}%</div>
+      <div class="dbar"><div class="dbf" style="width:${d.s}%;background:${c}"></div></div>
+      <div class="dw">Weight: ${d.w}%</div></div>`;
+  }).join('');
+
+  // Rejection reference
+  const rejK=`${ctx.fa}|${ctx.g}`;
+  const rejD=(D.REJ||{})[rejK];
+  if(rejD){
+    const topR=rejD.reasons.slice(0,5), topP=rejD.pom.slice(0,5);
+    _('r-rej').innerHTML=`
+      <p style="font-family:var(--body);font-size:14px;color:var(--t2);margin-bottom:12px">
+        <strong style="color:var(--warn)">${rejD.cnt.toLocaleString()}</strong> documented rejection events for <strong>${ctx.fa}</strong> × <strong>${ctx.g}</strong>
+      </p>
+      <div class="g2">
+        <div>
+          <div class="fl" style="margin-bottom:6px">Top Rejection Reasons</div>
+          ${topR.map((r,i)=>`<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px">
+            ${i===0?'<span class="chip cred" style="flex-shrink:0">PRIMARY</span>':'<span style="width:10px;flex-shrink:0"></span>'}
+            <span style="font-family:var(--body);font-size:13px;color:${i===0?'var(--t)':'var(--t2)'};font-weight:${i===0?500:400}">${r}</span>
+          </div>`).join('')}
+        </div>
+        <div>
+          <div class="fl" style="margin-bottom:6px">Critical POM Points</div>
+          ${topP.length?topP.map(p=>`<div class="chip cwarn" style="display:block;margin-bottom:3px;font-size:9px">${p}</div>`).join(''):'<span style="color:var(--t3);font-family:var(--body);font-size:13px;font-style:italic">No specific POM data available</span>'}
+        </div>
+      </div>`;
+  } else {
+    _('r-rej').innerHTML=`<p style="color:var(--t3);font-family:var(--body);font-style:italic;font-size:14px">No documented rejection reference for ${ctx.fa} × ${ctx.g}</p>`;
+  }
+
+  // Vendor KPI panel (repeated in result)
+  const kpis=[
+    {l:'Overall RFT',v:`${vs.rft??'—'}%`,s:'All garments'},
+    {l:'Garment RFT',v:`${vgRFT}%`,s:ctx.g},
+    {l:'Rolling RFT',v:`${vs.rolling??'—'}%`,s:'Computed rolling'},
+    {l:'DHU%',v:vs.dhu??'—',s:'Defects/100 units'},
+    {l:'AQL Score',v:vs.aql??'—',s:'Acceptance quality'},
+    {l:'On-time Del.',v:vs.otd??'—',s:'Score /10'},
+  ];
+  _('r-kpi').innerHTML=kpis.map(k=>`<div class="kcard"><div class="klbl">${k.l}</div><div class="kval">${k.v}</div><div class="ksub">${k.s}</div></div>`).join('');
+
+  // Smart vendor alternatives
+  const alts=(D.vendor_list||[])
+    .filter(vv=>vv!==ctx.v&&((D.VG_CAP||{})[vv]||[]).includes(ctx.g)&&((D.VF_CAP||{})[vv]||[]).includes(ctx.fa))
+    .sort((a,b)=>(((D.VG||{})[b]||{})[ctx.g]||0)-(((D.VG||{})[a]||{})[ctx.g]||0))
+    .slice(0,3);
+  if(alts.length){
+    _('r-alts').innerHTML='<div class="alt-grid">'+alts.map(vv=>{
+      const gr=((D.VG||{})[vv]||{})[ctx.g]||0;
+      const delta=gr-vgRFT; const dc=delta>=0?'var(--green)':'var(--red)';
+      const n=(D.VS||{})[vv]?.samples||0;
+      const c=gr>=75?'var(--green)':gr>=60?'var(--gold)':'var(--red)';
+      return`<div class="altc">
+        <div class="altd" style="color:${dc}">${delta>=0?'+':''}${delta.toFixed(1)}%</div>
+        <div style="font-family:var(--serif);font-size:13px;font-weight:600;color:var(--t);margin-bottom:3px;padding-right:48px">${vv}</div>
+        <div style="font-family:var(--serif);font-size:24px;font-weight:700;color:${c}">${gr}%</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--t3)">${ctx.g} RFT · ${n} samples</div>
+      </div>`;
+    }).join('')+'</div>';
+  } else {
+    _('r-alts').innerHTML=`<p style="color:var(--t3);font-family:var(--body);font-style:italic;font-size:14px">No alternative vendors with ≥3 samples for ${ctx.g} × ${ctx.fa}</p>`;
+  }
+
+  // History
+  hist.unshift({t:new Date().toLocaleTimeString(),v:ctx.v,g:ctx.g,fa:ctx.fa,score,res,ctx});
+  if(hist.length>10) hist.pop();
+  renderHist();
+  _('result-wrap').style.display='block';
+  _('hist-wrap').style.display='block';
+  setTimeout(()=>_('result-wrap').scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function renderHist(){
+  _('hist-rows').innerHTML=hist.slice(0,5).map((h,i)=>{
+    const c=h.score>=75?'var(--green)':h.score>=60?'var(--gold)':'var(--red)';
+    const ok=h.res.prediction==='Approved';
+    return`<tr>
+      <td style="color:var(--t3)">${h.t}</td><td>${h.v}</td><td>${h.g}</td><td>${h.fa}</td>
+      <td><span style="font-family:var(--mono);color:${c}">${h.score}%</span></td>
+      <td><span class="chip ${ok?'cgreen':'cred'}">${h.res.prediction}</span></td>
+      <td><span onclick="replayH(${i})" style="cursor:pointer;color:var(--blue);font-family:var(--mono);font-size:9px">↺ Replay</span></td>
+    </tr>`;
+  }).join('');
+}
+function replayH(i){ showResult(hist[i].res,hist[i].ctx); }
+function togHist(){
+  const b=_('hist-body'), t=_('hist-tog');
+  if(b.style.display==='none'){b.style.display='';t.textContent='[ collapse ]';}
+  else{b.style.display='none';t.textContent='[ expand ]';}
+}
+
+// ══════════════════════════════════════════════
+//  ANALYTICS
+// ══════════════════════════════════════════════
+function drawAnalytics(){
+  if(!D.total_records) return;
+  const avgRFT=Math.round(D.total_approved/D.total_records*100);
+  _('a-sbar').innerHTML=[
+    {v:D.total_records?.toLocaleString(),l:'Total Records'},
+    {v:D.total_approved?.toLocaleString(),l:'Approved'},
+    {v:D.total_rejected?.toLocaleString(),l:'Rejected'},
+    {v:D.num_vendors,l:'Vendors'},
+    {v:D.num_garments||6,l:'Garment Types'},
+    {v:avgRFT+'%',l:'Fleet RFT'},
+  ].map(s=>`<div class="si"><div class="sv">${s.v}</div><div class="sl">${s.l}</div></div>`).join('');
+
+  setTimeout(()=>{ drawVendorBar(); drawGarmentBar(); drawRoundLine(); drawDonut(); buildVRT(); },60);
+}
+
+function drawVendorBar(){
+  const cv=_('ch-vendor'); if(!cv) return;
+  cv.width=cv.offsetWidth||540; const data=(D.rej_by_vendor||[]).slice().sort((a,b)=>b.rej_rate-a.rej_rate);
+  const bH=10, gap=5, lpad=168, top=10;
+  cv.height=top+data.length*(bH+gap)+16;
+  const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
+  const maxV=Math.max(...data.map(d=>d.rej_rate),1);
+  const W=cv.width-lpad-24;
+  data.forEach((d,i)=>{
+    const y=top+i*(bH+gap);
+    ctx.fillStyle='rgba(240,237,228,.45)'; ctx.font='9px Consolas'; ctx.textAlign='right';
+    ctx.fillText((d.vendor||'').substring(0,24),lpad-5,y+bH-1);
+    const bw=d.rej_rate/maxV*W;
+    const c=d.rej_rate>35?'#E05060':d.rej_rate>20?'#E07A30':'#2ECC8A';
+    ctx.fillStyle=c+'44'; ctx.fillRect(lpad,y,bw,bH);
+    ctx.fillStyle=c; ctx.fillRect(lpad,y,2,bH);
+    ctx.fillStyle='rgba(240,237,228,.65)'; ctx.textAlign='left';
+    ctx.fillText(d.rej_rate+'%',lpad+bw+4,y+bH-1);
+  });
+}
+
+function drawGarmentBar(){
+  const cv=_('ch-garment'); if(!cv) return;
+  cv.width=cv.offsetWidth||400; cv.height=260;
+  const data=(D.rej_by_garment||[]).map(d=>({n:d.garment,v:100-d.rej_rate}));
+  const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
+  const n=data.length; if(!n) return;
+  const bw=Math.floor((cv.width-56)/n)-6, cH=cv.height-44;
+  data.forEach((d,i)=>{
+    const x=36+i*(bw+6); const bh=d.v/100*cH; const y=cH-bh+10;
+    const c=d.v>=75?'#2ECC8A':d.v>=60?'#D4A84B':'#E05060';
+    ctx.fillStyle=c+'30'; ctx.fillRect(x,y,bw,bh);
+    ctx.fillStyle=c; ctx.fillRect(x,y,bw,2);
+    ctx.fillStyle='rgba(240,237,228,.65)'; ctx.font='9px Consolas'; ctx.textAlign='center';
+    ctx.fillText(d.n,x+bw/2,cv.height-4);
+    ctx.fillText(d.v.toFixed(0)+'%',x+bw/2,y-4);
+  });
+}
+
+function drawRoundLine(){
+  const cv=_('ch-round'); if(!cv) return;
+  cv.width=cv.offsetWidth||400;
+  const data=(D.rej_by_round||[]).map(d=>({r:d.round,p:100-d.rej_rate}));
+  if(data.length<2) return;
+  const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
+  const p=36, cW=cv.width-p*2, cH=cv.height-p*2;
+  ctx.strokeStyle='rgba(255,200,80,.08)'; ctx.lineWidth=1;
+  [0,25,50,75,100].forEach(v=>{
+    const y=p+cH*(1-v/100);
+    ctx.beginPath(); ctx.moveTo(p,y); ctx.lineTo(p+cW,y); ctx.stroke();
+    ctx.fillStyle='rgba(255,200,80,.3)'; ctx.font='8px Consolas'; ctx.textAlign='right';
+    ctx.fillText(v+'%',p-4,y+3);
+  });
+  const xS=cW/(data.length-1);
+  ctx.strokeStyle='var(--gold)'; ctx.lineWidth=2; ctx.beginPath();
+  data.forEach((d,i)=>{ const x=p+i*xS,y=p+cH*(1-d.p/100); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+  ctx.fillStyle='rgba(212,168,75,.1)'; ctx.beginPath(); ctx.moveTo(p,p+cH);
+  data.forEach((d,i)=>ctx.lineTo(p+i*xS,p+cH*(1-d.p/100))); ctx.lineTo(p+cW,p+cH); ctx.closePath(); ctx.fill();
+  data.forEach((d,i)=>{
+    const x=p+i*xS,y=p+cH*(1-d.p/100);
+    ctx.fillStyle='var(--gold)'; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(240,237,228,.8)'; ctx.font='9px Consolas'; ctx.textAlign='center';
+    ctx.fillText(`Rd ${d.r}`,x,cv.height-4); ctx.fillText(d.p.toFixed(0)+'%',x,y-8);
+  });
+}
+
+function drawDonut(){
+  const cv=_('ch-donut'); if(!cv) return;
+  const sz=Math.min(cv.offsetWidth||200,cv.height); cv.width=sz;
+  const ctx=cv.getContext('2d'),cx=sz/2,cy=sz/2,R=sz*.38,ir=sz*.22;
+  const tot=D.total_records||1,app=D.total_approved||0,rej=D.total_rejected||0;
+  ctx.clearRect(0,0,sz,sz);
+  [[app,'#2ECC8A',0],[rej,'#E05060',app/tot*Math.PI*2]].forEach(([v,c,start])=>{
+    const sw=v/tot*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,start-Math.PI/2,start+sw-Math.PI/2); ctx.closePath();
+    ctx.fillStyle=c+'55'; ctx.fill(); ctx.strokeStyle=c; ctx.lineWidth=1.5; ctx.stroke();
+  });
+  ctx.fillStyle='var(--panel)'; ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='var(--gold)'; ctx.font=`bold ${sz*.11}px "Playfair Display"`; ctx.textAlign='center';
+  ctx.fillText(Math.round(app/tot*100)+'%',cx,cy+5);
+  ctx.fillStyle='var(--t3)'; ctx.font=`${sz*.055}px Consolas`; ctx.fillText('PASS RATE',cx,cy+sz*.1);
+}
+
+function buildVRT(){
+  const data=(D.rej_by_vendor||[]).slice().sort((a,b)=>b.rej_rate-a.rej_rate);
+  const vs=D.VS||{};
+  _('a-vt').innerHTML=data.map((d,i)=>{
+    const tier=d.rej_rate>35?['HIGH','cred']:d.rej_rate>20?['MEDIUM','cwarn']:['LOW','cgreen'];
+    const n=(vs[d.vendor]||{}).samples||0;
+    const bw=Math.round(d.rej_rate/Math.max(...data.map(x=>x.rej_rate),1)*100);
+    return`<tr>
+      <td style="font-family:var(--mono);color:var(--t3)">${i+1}</td>
+      <td style="font-family:var(--serif)">${d.vendor}</td>
+      <td style="font-family:var(--mono);color:${d.rej_rate>35?'var(--red)':d.rej_rate>20?'var(--warn)':'var(--green)'}">${d.rej_rate}%</td>
+      <td style="font-family:var(--mono)">${n}</td>
+      <td><span class="chip ${tier[1]}">${tier[0]}</span></td>
+      <td><div style="height:6px;background:var(--lift)"><div style="height:6px;width:${bw}%;background:${d.rej_rate>35?'var(--red)':d.rej_rate>20?'var(--warn)':'var(--green)'}"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  VENDORS PAGE
+// ══════════════════════════════════════════════
+function drawVendors(){
+  if(!D.VS) return;
+  const avgRFT=Math.round(D.total_approved/D.total_records*100);
+  const topRFT=Math.max(...Object.values(D.VS).map(v=>v.rft));
+  _('vp-sbar').innerHTML=[
+    {v:D.num_vendors,l:'Total Vendors'},
+    {v:avgRFT+'%',l:'Fleet RFT'},
+    {v:D.total_records?.toLocaleString(),l:'Total Samples'},
+    {v:topRFT+'%',l:'Highest RFT'},
+  ].map(s=>`<div class="si"><div class="sv">${s.v}</div><div class="sl">${s.l}</div></div>`).join('');
+  filtV();
+}
+
+function filtV(){
+  const q=(_('v-search')?.value||'').toLowerCase();
+  const sort=_('v-sort')?.value||'rft-d';
+  let vlist=Object.entries(D.VS||{}).filter(([n])=>n.toLowerCase().includes(q));
+  vlist.sort(([an,av],[bn,bv])=>{
+    if(sort==='rft-d') return bv.rft-av.rft;
+    if(sort==='rft-a') return av.rft-bv.rft;
+    if(sort==='name')  return an.localeCompare(bn);
+    if(sort==='samples') return bv.samples-av.samples;
+    return 0;
+  });
+  _('v-grid').innerHTML=vlist.map(([name,v])=>{
+    const col=v.rft>=80?'var(--green)':v.rft>=65?'var(--gold)':'var(--red)';
+    const gTags=Object.keys((D.VG||{})[name]||{}).map(g=>`<span class="vtag">${g}</span>`).join('');
+    const fTags=Object.keys((D.VF||{})[name]||{}).slice(0,5).map(f=>`<span class="vtag">${f}</span>`).join('');
+    const gRFTs=Object.entries((D.VG||{})[name]||{}).map(([g,r])=>`<span class="chip cg" style="font-size:8px">${g}: ${r}%</span>`).join('');
+    return`<div class="vc">
+      <div class="vstripe" style="background:${col}"></div>
+      <div class="vbody">
+        <div class="vname">${name}</div>
+        <div class="vrft" style="color:${col}">${v.rft}%</div>
+        <div class="vrsub">Overall RFT · ${v.samples} samples</div>
+        <div class="vmeta"><span>Rolling: ${v.rolling}%</span><span>DHU: ${v.dhu}</span><span>AQL: ${v.aql}</span><span>OTD: ${v.otd}</span></div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-bottom:4px;letter-spacing:1px">GARMENT RFT</div>
+        <div style="margin-bottom:8px">${gRFTs||'<span class="vtag">No data</span>'}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-bottom:4px;letter-spacing:1px">FABRIC CAPABILITY</div>
+        <div>${fTags||'<span class="vtag">No data</span>'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  MODEL PAGE
+// ══════════════════════════════════════════════
+function drawModel(){
+  const m=D.METRICS; if(!m) return;
+  // ROC
+  setTimeout(()=>{
+    const cv=_('roc-c'); if(!cv) return;
+    const ctx=cv.getContext('2d'); cv.width=380; cv.height=280;
+    ctx.clearRect(0,0,380,280);
+    const p=36, cW=380-p*2, cH=280-p*2;
+    ctx.strokeStyle='rgba(255,200,80,.08)'; ctx.lineWidth=1;
+    [0,.25,.5,.75,1].forEach(v=>{
+      const x=p+v*cW, y=p+v*cH;
+      ctx.beginPath(); ctx.moveTo(x,p); ctx.lineTo(x,p+cH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p,p+cH-v*cH); ctx.lineTo(p+cW,p+cH-v*cH); ctx.stroke();
+      ctx.fillStyle='rgba(255,200,80,.28)'; ctx.font='8px Consolas';
+      ctx.textAlign='center'; ctx.fillText(Math.round(v*100)+'%',x,p+cH+12);
+      ctx.textAlign='right'; ctx.fillText(Math.round(v*100)+'%',p-4,p+cH-v*cH+3);
+    });
+    ctx.strokeStyle='rgba(255,200,80,.18)'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(p,p+cH); ctx.lineTo(p+cW,p); ctx.stroke();
+    ctx.setLineDash([]);
+    if(m.roc_fpr&&m.roc_tpr){
+      ctx.strokeStyle='var(--gold)'; ctx.lineWidth=2; ctx.beginPath();
+      m.roc_fpr.forEach((x,i)=>{ const px=p+x*cW, py=p+cH-m.roc_tpr[i]*cH; i?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke();
+      ctx.fillStyle='rgba(212,168,75,.08)'; ctx.beginPath(); ctx.moveTo(p,p+cH);
+      m.roc_fpr.forEach((x,i)=>ctx.lineTo(p+x*cW,p+cH-m.roc_tpr[i]*cH));
+      ctx.lineTo(p+cW,p+cH); ctx.closePath(); ctx.fill();
+    }
+    _('roc-lbl').textContent=`AUC-ROC: ${m.auc_roc}`;
+
+    // Confusion matrix
+    if(m.cm){
+      const [[tn,fp],[fn,tp]]=m.cm;
+      const cells=[
+        {l:'True Negative',v:tn,c:'var(--green)',d:'Correctly predicted Rejected'},
+        {l:'False Positive',v:fp,c:'var(--warn)',d:'Predicted Approved → actually Rejected'},
+        {l:'False Negative',v:fn,c:'var(--warn)',d:'Predicted Rejected → actually Approved'},
+        {l:'True Positive',v:tp,c:'var(--green)',d:'Correctly predicted Approved'},
+      ];
+      _('cm-grid').innerHTML=cells.map(c=>`
+        <div style="background:var(--lift);border:1px solid var(--bd);padding:14px;text-align:center">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:1px;margin-bottom:3px">${c.l}</div>
+          <div style="font-family:var(--serif);font-size:30px;font-weight:700;color:${c.c}">${c.v}</div>
+          <div style="font-family:var(--body);font-size:11px;color:var(--t3);margin-top:3px;font-style:italic">${c.d}</div>
+        </div>`).join('');
+    }
+
+    // Feature importance
+    const cv2=_('fi-c'); if(!cv2) return;
+    cv2.width=cv2.offsetWidth||680;
+    const top12=(D.FEATURE_IMPORTANCE||[]).slice(0,12);
+    const maxFI=Math.max(...top12.map(f=>f.importance),.01);
+    const bH=13, gap=6, lp=220, tp2=12;
+    cv2.height=tp2+top12.length*(bH+gap)+tp2;
+    const ctx2=cv2.getContext('2d'); ctx2.clearRect(0,0,cv2.width,cv2.height);
+    top12.forEach((f,i)=>{
+      const y=tp2+i*(bH+gap);
+      ctx2.fillStyle='rgba(240,237,228,.45)'; ctx2.font='9px Consolas'; ctx2.textAlign='right';
+      ctx2.fillText(f.feature,lp-5,y+bH-2);
+      const bw=(f.importance/maxFI)*(cv2.width-lp-56);
+      ctx2.fillStyle='var(--gold)44'; ctx2.fillRect(lp,y,bw,bH);
+      ctx2.fillStyle='var(--gold)'; ctx2.fillRect(lp,y,2,bH);
+      ctx2.fillStyle='rgba(240,237,228,.7)'; ctx2.textAlign='left';
+      ctx2.fillText((f.importance*100).toFixed(1)+'%',lp+bw+4,y+bH-2);
+    });
+  },100);
+
+  // Info table
+  _('mi-rows').innerHTML=[
+    ['Training Records',D.total_records?.toLocaleString(),'Full dataset, 5-fold OOF'],
+    ['Approved',D.total_approved?.toLocaleString(),'Class 1 (positive)'],
+    ['Rejected',D.total_rejected?.toLocaleString(),'Class 0 (negative)'],
+    ['Class Balance',`${Math.round(D.total_approved/D.total_records*100)}% / ${Math.round(D.total_rejected/D.total_records*100)}%`,'scale_pos_weight applied'],
+    ['Features Used',D.feature_cols?.length??'21','Style + construction + process'],
+    ['AUC-ROC',m.auc_roc,'5-fold stratified OOF'],
+    ['F1 Score',m.f1,'Youden threshold applied'],
+    ['Recall (Rejected)',m.recall_rejected,'Sensitivity to failures'],
+    ['Precision',m.precision,'Positive predictive value'],
+    ['Accuracy',m.accuracy,'Overall classification'],
+    ['Optimal Threshold',m.best_threshold,"Youden's J statistic"],
+  ].map(([k,v,n])=>`<tr>
+    <td style="font-family:var(--mono);color:var(--t2)">${k}</td>
+    <td style="font-family:var(--serif);font-size:16px;font-weight:600;color:var(--gold)">${v}</td>
+    <td style="font-family:var(--body);color:var(--t3);font-style:italic;font-size:13px">${n}</td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  RETRAIN
+// ══════════════════════════════════════════════
+function buildRetrainMetrics(){
+  const m=D.METRICS; if(!m) return;
+  _('rt-metrics').innerHTML=[
+    ['AUC-ROC',m.auc_roc],['F1 Score',m.f1],['Accuracy',m.accuracy],
+    ['Recall (Rejected)',m.recall_rejected],['Precision',m.precision],
+    ['Decision Threshold',m.best_threshold],['Training Records',D.total_records],
+  ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd)">
+    <span style="font-family:var(--mono);font-size:9px;color:var(--t3)">${l}</span>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--gold)">${v}</span>
+  </div>`).join('');
+}
+
+async function retrain(){
+  const btn=_('btn-rt'); btn.disabled=true; btn.textContent='Retraining…';
+  const st=_('rt-status'); st.style.display='block'; st.style.color='var(--gold)';
+  st.textContent='⟳ Training in progress (~60–90 seconds)…';
+  try{
+    const r=await fetch(API+'/api/retrain'); const d=await r.json();
+    if(d.status==='success'){
+      st.style.color='var(--green)'; st.textContent='✓ Model retrained. Reloading dashboard…';
+      await boot(); buildRetrainMetrics();
+    } else { st.style.color='var(--red)'; st.textContent='✕ '+( d.message||'Error'); }
+  } catch(e){ st.style.color='var(--red)'; st.textContent='✕ Server error: '+e.message; }
+  finally{ btn.disabled=false; btn.textContent='↺  Retrain Model Now'; }
+}
+
+// ══════════════════════════════════════════════
+//  RESIZE
+// ══════════════════════════════════════════════
+window.addEventListener('resize',()=>{
+  if(_('pg-analytics').classList.contains('on')){ drawVendorBar(); drawGarmentBar(); drawRoundLine(); drawDonut(); }
+  if(_('pg-model').classList.contains('on')) drawModel();
+});
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+boot();
+</script>
+</body>
+</html>
